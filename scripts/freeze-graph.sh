@@ -49,11 +49,11 @@ freeze() {
 export_vgg_graph() {
     measure ./export.py \
         --base-model=vgg \
-        --path-to-npz=${HOME}/Downloads/vgg450000.npz \
+        --path-to-npz=${HOME}/Downloads/vgg450000_np_cpm.npz \
         --graph-filename='openpose-vgg.pb.txt' \
         --checkpoint-name='openpose-vgg-ckpt'
 
-    measure freeze openpose-vgg.pg.txt openpose-vgg-ckpt-0 openpose-vgg-freezed
+    measure freeze openpose-vgg.pb.txt openpose-vgg-ckpt-0 openpose-vgg-freezed
 }
 
 export_vggtiny_graph() {
@@ -78,5 +78,5 @@ export_mobilenet_graph() {
 }
 
 [ -d checkpoints ] && rm -fr checkpoints
-# export_vgg_graph
-export_mobilenet_graph
+export_vgg_graph
+# export_mobilenet_graph

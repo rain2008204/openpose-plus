@@ -15,4 +15,4 @@ for name, t in data.items():
     new_name = name.replace('cpm/', '')
     new_data[new_name] = t
 
-np.save(new_filename, new_data)
+np.savez(new_filename, new_data)
