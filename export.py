@@ -22,9 +22,9 @@ def save_graph(sess, checkpoint_dir, name):
     tf.train.write_graph(sess.graph_def, checkpoint_dir, name)
 
 
-def save_model(sess, checkpoint_dir, global_step=0):
+def save_model(sess, checkpoint_dir, checkpoint_name, global_step=0):
     saver = tf.train.Saver()
-    checkpoint_prefix = os.path.join(checkpoint_dir, "saved_checkpoint")
+    checkpoint_prefix = os.path.join(checkpoint_dir, checkpoint_name)
     checkpoint_state_name = 'checkpoint_state'
     saver.save(sess, checkpoint_prefix, global_step=global_step, latest_filename=checkpoint_state_name)
 
@@ -34,7 +34,8 @@ def parse_args():
     parser.add_argument('--base-model', type=str, default='', help='vgg | mobilenet', required=True)
     parser.add_argument('--path-to-npz', type=str, default='', help='path to npz', required=True)
     parser.add_argument('--checkpoint-dir', type=str, default='checkpoints', help='checkpoint dir')
-    parser.add_argument('--graph-filename', type=str, default='graph.pb.txt', help='graph filename')
+    parser.add_argument('--graph-filename', type=str, default='', help='graph filename', required=True)
+    parser.add_argument('--checkpoint-name', type=str, default='', help='checkpoint name', required=True)
 
     return parser.parse_args()
 
@@ -51,7 +52,7 @@ def get_func_func(base_model_name):
     return model_func
 
 
-def export_model(model_func, checkpoint_dir, path_to_npz, graph_filename):
+def export_model(model_func, checkpoint_dir, path_to_npz, graph_filename, checkpoint_name):
     mkdir_p(checkpoint_dir)
     model_parameters = model_func()
 
@@ -59,7 +60,7 @@ def export_model(model_func, checkpoint_dir, path_to_npz, graph_filename):
         sess.run(tf.global_variables_initializer())
         measure(lambda: tl.files.load_and_assign_npz_dict(path_to_npz, sess), 'load npz')
         measure(lambda: save_graph(sess, checkpoint_dir, graph_filename), 'save_graph')
-        measure(lambda: save_model(sess, checkpoint_dir), 'save_model')
+        measure(lambda: save_model(sess, checkpoint_dir, checkpoint_name), 'save_model')
 
     print('model_parameters:')
     for p in model_parameters:
@@ -68,7 +69,9 @@ def export_model(model_func, checkpoint_dir, path_to_npz, graph_filename):
 
 def main():
     args = parse_args()
-    export_model(get_func_func(args.base_model), args.checkpoint_dir, args.path_to_npz, args.graph_filename)
+    export_model(
+        get_func_func(args.base_model), args.checkpoint_dir, args.path_to_npz, args.graph_filename,
+        args.checkpoint_name)
 
 
 if __name__ == '__main__':

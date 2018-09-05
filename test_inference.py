@@ -5,9 +5,15 @@ import os
 import sys
 import time
 
+import tensorflow as tf
+import tensorlayer as tl
+
 from inference.common import measure, plot_humans, read_imgfile
 from inference.estimator2 import TfPoseEstimator as TfPoseEstimator2
 from models import get_full_model_func
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
 def inference(base_model_name, path_to_npz, input_files, plot):
