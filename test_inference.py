@@ -31,7 +31,8 @@ def inference(base_model_name, path_to_npz, input_files, plot):
             if plot:
                 plot_humans(e, image, humans, '%02d' % (idx + 1))
     tot = time.time() - t0
-    tl.logging.info('inference all took: %f, mean: %f' % (tot, tot / len(input_files)))
+    mean = tot / len(input_files)
+    tl.logging.info('inference all took: %f, mean: %f, FPS: %f' % (tot, mean, 1.0 / mean))
 
 
 def parse_args():
@@ -40,13 +41,14 @@ def parse_args():
     parser.add_argument('--images', type=str, default='', help='comma separate list of image filenames', required=True)
     parser.add_argument('--base-model', type=str, default='vgg', help='vgg | mobilenet')
     parser.add_argument('--plot', type=bool, default=False, help='draw the results')
+    parser.add_argument('--repeat', type=int, default=1, help='repeat the images for n times for profiling.')
 
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
-    image_files = [f for f in args.images.split(',') if f]
+    image_files = [f for f in args.images.split(',') if f] * args.repeat
     inference(args.base_model, args.path_to_npz, image_files, args.plot)
 
 
