@@ -1,19 +1,42 @@
 #!/bin/sh
 set -e
+
+now_nano() {
+    date +%s*1000000000+%N | bc
+}
+
+measure() {
+    echo "[->] $@ begins"
+    local begin=$(now_nano)
+    $@
+    local end=$(now_nano)
+    local duration=$(echo "scale=6; ($end - $begin) / 1000000000" | bc)
+    echo "[==] $@ took ${duration}s" | tee -a time.log
+}
+
 cd $(dirname $0)/..
 
 export PYTHONUNBUFFERED=1
 
 profile_model() {
-    ./test_inference.py --path-to-npz=$HOME/Downloads/$2 \
-        --base-model=$1 \
+    local model=$1
+    local npz=$2
+    local data_format=$3
+
+    local log_name=$model-$data_format
+
+    ./test_inference.py --path-to-npz=$HOME/Downloads/$npz \
+        --base-model=$model \
         --images=$(ls data/media/*.jpg | sort | tr '\n' ',') \
-        --repeat 1 \
+        --data-format=$data_format \
         --plot=False \
-        >logs/$1.stdout.log 2>logs/$1.stderr.log
+        --repeat 1 \
+        --limit 2 \
+        >logs/$log_name.stdout.log 2>logs/$log_name.stderr.log
 }
 
 mkdir -p logs
-profile_model vgg vgg450000_no_cpm.npz
-profile_model vggtiny pose195000.npz
-profile_model mobilenet mbn280000.npz
+measure profile_model vggtiny pose195000.npz NHWC
+measure profile_model mobilenet mbn280000.npz NHWC
+measure profile_model vgg vgg450000_no_cpm.npz NHWC
+measure profile_model vgg vgg450000_no_cpm_nchw.npz NCHW

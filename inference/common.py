@@ -159,11 +159,15 @@ class Profiler(object):
         self.total = dict()
 
     def __del__(self):
-        if not self.count:
-            return
+        pass
+        # TODO: make sure __def__ is only called on exit
+        # self.report()
 
-        names = [name for _, name in sorted([(t, name) for name, t in self.total.items()])]
-        print('%-12s %-12s %-12s %s' % ('tot', 'count', 'mean', 'name'))
+    def report(self):
+        sorted_costs = sorted([(t, name) for name, t in self.total.items()])
+        sorted_costs.reverse()
+        names = [name for _, name in sorted_costs]
+        print('%-12s %-12s %-12s %s' % ('tot (s)', 'count', 'mean (s)', 'name'))
         for name in names:
             tot, cnt = self.total[name], self.count[name]
             mean = tot / cnt
@@ -174,7 +178,7 @@ class Profiler(object):
             self.count[name] += 1
             self.total[name] += duration
         else:
-            self.count[name] = 0
+            self.count[name] = 1
             self.total[name] = duration
 
 
