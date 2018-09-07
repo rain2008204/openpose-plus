@@ -55,7 +55,7 @@ def get_full_model_func(base_model_name):
     def full_model(n_pos, target_size=(368, 368), data_format='NHWC'):
         """Creates the model including the post processing."""
         image = _input_image(target_size[1], target_size[0], data_format, 'image')
-        _, _, _, net = base_model(image, n_pos, False, False, data_format)
+        _, _, _, net = base_model(image, n_pos, False, False, data_format=data_format)
 
         conf_tensor = tl.layers.get_layers_with_name(net, 'model/stage6/branch1/conf')[0]
         pafs_tensor = tl.layers.get_layers_with_name(net, 'model/stage6/branch2/pafs')[0]
