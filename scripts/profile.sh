@@ -36,7 +36,7 @@ profile_model() {
         --base-model=$model \
         --images=$(ls data/media/*.jpg | sort | tr '\n' ',') \
         --data-format=$data_format \
-        --plot=False \
+        --plot='' \
         --repeat 1 \
         --limit 2 \
         >logs/$log_name.stdout.log 2>logs/$log_name.stderr.log

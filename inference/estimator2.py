@@ -371,6 +371,9 @@ class TfPoseEstimator:
                 self.upsample_size: upsample_size
             })
 
+        self.heatMat = heatMat_up[0]  # FIXME
+        self.pafMat = pafMat_up[0]  # FIXME
+
         t = time.time()
         humans = PoseEstimator.estimate_paf(peaks[0], heatMat_up[0], pafMat_up[0])
         logger.info('estimate time=%.5f' % (time.time() - t))
