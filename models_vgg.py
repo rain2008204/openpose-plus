@@ -13,9 +13,12 @@ b_init = tf.constant_initializer(value=0.0)
 def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None, data_format='channels_last'):
     """Defines the entire pose estimation model."""
 
-    def _conv2d(x, c, filter_sizes, strides, act, padding, name):
+    def _conv2d(x, c, filter_size, strides, act, padding, name):
         return Conv2d(
-            x, c, filter_sizes, strides, act, padding, W_init=W_init, b_init=b_init, name=name, data_format=data_format)
+            x, c, filter_size, strides, act, padding, W_init=W_init, b_init=b_init, name=name, data_format=data_format)
+
+    def _maxpool2d(x, name):
+        return MaxPool2d(x, (2, 2), (2, 2), padding='SAME', name=name, data_format=data_format)
 
     def state1(cnn, n_pos, mask_miss1, mask_miss2, is_train):
         """Define the first stage of openpose."""
@@ -42,7 +45,14 @@ def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None, data_for
         """Define the archuecture of stage 2 and so on."""
 
         with tf.variable_scope(scope_name):
-            net = ConcatLayer([cnn, b1, b2], -1, name='concat')
+            if data_format == 'channels_last':
+                concat_dim = -1
+            elif data_format == 'channels_first':
+                concat_dim = 1
+            else:
+                raise ValueError('invalid data_format: %s' % data_format)
+            net = ConcatLayer([cnn, b1, b2], concat_dim, name='concat')
+
             with tf.variable_scope("branch1"):
                 b1 = _conv2d(net, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', 'c1')
                 b1 = _conv2d(b1, 128, (7, 7), (1, 1), tf.nn.relu, 'SAME', 'c2')
@@ -80,17 +90,17 @@ def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None, data_for
         # conv1
         net = _conv2d(net_in, 64, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv1_1')
         net = _conv2d(net, 64, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv1_2')
-        net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool1')
+        net = _maxpool2d(net, 'pool1')
         # conv2
         net = _conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv2_1')
         net = _conv2d(net, 128, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv2_2')
-        net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool2')
+        net = _maxpool2d(net, 'pool2')
         # conv3
         net = _conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_1')
         net = _conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_2')
         net = _conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_3')
         net = _conv2d(net, 256, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv3_4')
-        net = MaxPool2d(net, (2, 2), (2, 2), padding='SAME', name='pool3')
+        net = _maxpool2d(net, 'pool3')
         # conv4
         net = _conv2d(net, 512, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv4_1')
         net = _conv2d(net, 512, (3, 3), (1, 1), act=tf.nn.relu, padding='SAME', name='conv4_2')

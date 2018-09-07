@@ -26,7 +26,7 @@ def inference(base_model_name, path_to_npz, data_format, input_files, plot):
 
     t0 = time.time()
     for idx, img_name in enumerate(input_files):
-        image = measure(lambda: read_imgfile(img_name, None, None), 'read_imgfile')
+        image = measure(lambda: read_imgfile(img_name, None, None, data_format=data_format), 'read_imgfile')
         humans = measure(lambda: e.inference(image, resize_out_ratio=8.0), 'e.inference')
         tl.logging.debug('got %d humans from %s' % (len(humans), img_name))
         if humans:
