@@ -152,17 +152,44 @@ def get_op(graph, name):
     return graph.get_operation_by_name('import/%s' % name).outputs[0]
 
 
+class Profiler(object):
+
+    def __init__(self):
+        self.count = dict()
+        self.total = dict()
+
+    def __del__(self):
+        names = [name for _, name in sorted([(t, name) for name, t in self.total.items()])]
+        print('%-12s %-12s %-12s %s' % ('tot', 'count', 'mean', 'name'))
+        for name in names:
+            tot, cnt = self.total[name], self.count[name]
+            mean = tot / cnt
+            print('%-12f %-12d %-12f %s' % (tot, cnt, mean, name))
+
+    def __call__(self, name, duration):
+        if name in self.count:
+            self.count[name] += 1
+            self.total[name] += duration
+        else:
+            self.count[name] = 0
+            self.total[name] = duration
+
+
+_default_profiler = Profiler()
+
+
 def measure(f, name=None):
     if not name:
         name = f.__name__
     t0 = time.time()
     result = f()
-    print('start %s' % name)
+    # print('start %s' % name)
     duration = time.time() - t0
-    line = '%s took %fs' % (name, duration)
-    print(line)
-    with open('profile.log', 'a') as f:
-        f.write(line + '\n')
+    _default_profiler(name, duration)
+    # line = '%s took %fs' % (name, duration)
+    # print(line)
+    # with open('profile.log', 'a') as f:
+    #     f.write(line + '\n')
     return result
 
 
@@ -196,4 +223,3 @@ def plot_humans(e, image, humans, name):
     plt.colorbar()
     mkpath('vis')
     plt.savefig('vis/result-%s.png' % name)
-

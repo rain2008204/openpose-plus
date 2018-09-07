@@ -44,7 +44,11 @@ def parse_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+def main():
     args = parse_args()
     image_files = [f for f in args.images.split(',') if f]
     inference(args.base_model, args.path_to_npz, image_files, args.plot)
+
+
+if __name__ == '__main__':
+    measure(main)
