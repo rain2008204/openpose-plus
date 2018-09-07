@@ -39,4 +39,6 @@ mkdir -p logs
 measure profile_model vggtiny pose195000.npz NHWC
 measure profile_model mobilenet mbn280000.npz NHWC
 measure profile_model vgg vgg450000_no_cpm.npz NHWC
-measure profile_model vgg vgg450000_no_cpm_nchw.npz NCHW
+
+# NCHW is not supported yet: https://github.com/tensorlayer/tensorlayer/issues/561
+# measure profile_model vgg vgg450000_no_cpm_nchw.npz NCHW
