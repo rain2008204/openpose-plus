@@ -159,6 +159,9 @@ class Profiler(object):
         self.total = dict()
 
     def __del__(self):
+        if not self.count:
+            return
+
         names = [name for _, name in sorted([(t, name) for name, t in self.total.items()])]
         print('%-12s %-12s %-12s %s' % ('tot', 'count', 'mean', 'name'))
         for name in names:
