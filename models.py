@@ -39,9 +39,9 @@ def _get_peek(tensor, name):
 def _input_image(height, width, data_format, name):
     """Create a placeholder for input image."""
     # TODO: maybe make it a Layer in tensorlayer
-    if data_format == 'NHWC':
+    if data_format == 'channels_last':
         shape = (None, height, width, 3)
-    elif data_format == 'NCHW':
+    elif data_format == 'channels_first':
         shape = (None, 3, height, width)
     else:
         raise ValueError('invalid data_format: %s' % data_format)
@@ -52,7 +52,7 @@ def get_full_model_func(base_model_name):
 
     base_model = get_base_model_func(base_model_name)
 
-    def full_model(n_pos, target_size=(368, 368), data_format='NHWC'):
+    def full_model(n_pos, target_size=(368, 368), data_format='channels_last'):
         """Creates the model including the post processing."""
         image = _input_image(target_size[1], target_size[0], data_format, 'image')
         _, _, _, net = base_model(image, n_pos, False, False, data_format=data_format)

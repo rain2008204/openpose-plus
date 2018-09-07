@@ -10,28 +10,12 @@ W_init = tf.contrib.layers.xavier_initializer()  # tf.truncated_normal_initializ
 b_init = tf.constant_initializer(value=0.0)
 
 
-def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None, data_format='NHWC'):
+def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None, data_format='channels_last'):
     """Defines the entire pose estimation model."""
-
-    if data_format != 'NHWC':
-        # TODO: support NCHW
-        # See: https://github.com/tensorlayer/tensorlayer/issues/561
-        print('data_format=%s is ignored' % data_format)
 
     def _conv2d(x, c, filter_sizes, strides, act, padding, name):
         return Conv2d(
-            x,
-            c,
-            filter_sizes,
-            strides,
-            act,
-            padding,
-            W_init=W_init,
-            b_init=b_init,
-            name=name
-            # FIXME: data_format is ignored: https://github.com/tensorlayer/tensorlayer/issues/561
-            # , data_format=data_format
-        )
+            x, c, filter_sizes, strides, act, padding, W_init=W_init, b_init=b_init, name=name, data_format=data_format)
 
     def state1(cnn, n_pos, mask_miss1, mask_miss2, is_train):
         """Define the first stage of openpose."""

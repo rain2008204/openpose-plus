@@ -48,8 +48,8 @@ def stage(cnn, b1, b2, n_pos, maskInput1, maskInput2, is_train, name='stageX'):
     return b1, b2
 
 
-def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None, data_format='NHWC'):  # hao25
-    if data_format != 'NHWC':
+def model(x, n_pos, mask_miss1, mask_miss2, is_train=False, reuse=None, data_format='channels_last'):  # hao25
+    if data_format != 'channels_last':
         # TODO: support NCHW
         print('data_format=%s is ignored' % data_format)
 
