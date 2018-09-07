@@ -5,9 +5,15 @@ import os
 import sys
 import time
 
+import tensorflow as tf
+import tensorlayer as tl
+
 from inference.common import measure, plot_humans, read_imgfile
 from inference.estimator2 import TfPoseEstimator as TfPoseEstimator2
 from models import get_full_model_func
+
+tf.logging.set_verbosity(tf.logging.DEBUG)
+tl.logging.set_verbosity(tl.logging.DEBUG)
 
 
 def inference(base_model_name, path_to_npz, input_files, plot):
@@ -16,7 +22,7 @@ def inference(base_model_name, path_to_npz, input_files, plot):
 
     for idx, img_name in enumerate(input_files):
         image = read_imgfile(img_name, None, None)
-        humans = measure(lambda: e.inference(image, resize_out_ratio=8.0), 'inference')
+        humans = measure(lambda: e.inference(image, resize_out_ratio=8.0), 'e.inference')
         print('got %d humans from %s' % (len(humans), img_name))
         if humans:
             for h in humans:
