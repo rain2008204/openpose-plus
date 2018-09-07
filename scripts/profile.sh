@@ -9,6 +9,6 @@ profile_model() {
         --plot=False
 }
 
-profile_model vgg vgg450000_no_cpm.npz >vgg.log
-profile_model vggtiny pose195000.npz >tinyvgg.log
-profile_model mobilenet mbn28000.npz >mobilenet.log
+profile_model vgg vgg450000_no_cpm.npz 2>vgg.log
+profile_model vggtiny pose195000.npz 2>tinyvgg.log
+profile_model mobilenet mbn280000.npz 2>mobilenet.log

@@ -14,7 +14,7 @@ from inference.pafprocess import pafprocess
 from inference.tensblur.smoother import Smoother
 
 logger = logging.getLogger('TfPoseEstimator')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
@@ -475,7 +475,7 @@ class TfPoseEstimator:
         t = time.time()
         print('SHAPE', peaks.shape)
         humans = PoseEstimator.estimate_paf(peaks, self.heatMat, self.pafMat)
-        logger.debug('estimate time=%.5f' % (time.time() - t))
+        logger.info('estimate time=%.5f' % (time.time() - t))
         return humans
 
 
