@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 now_nano() {
@@ -8,7 +8,7 @@ now_nano() {
 measure() {
     echo "[->] $@ begins"
     local begin=$(now_nano)
-    $@
+    "$@"
     local end=$(now_nano)
     local duration=$(echo "scale=6; ($end - $begin) / 1000000000" | bc)
     echo "[==] $@ took ${duration}s" | tee -a time.log
@@ -46,4 +46,4 @@ mkdir -p logs
 measure profile_model vggtiny pose195000.npz NHWC
 measure profile_model mobilenet mbn280000.npz NHWC
 measure profile_model vgg vgg450000_no_cpm.npz NHWC
-measure profile_model vgg vgg450000_no_cpm_nchw.npz NCHW
+measure profile_model vgg vgg450000_no_cpm.npz NCHW # npz is the same
